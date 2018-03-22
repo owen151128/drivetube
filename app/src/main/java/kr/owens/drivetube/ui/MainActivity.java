@@ -1,9 +1,11 @@
-package kr.owens.drivetube;
+package kr.owens.drivetube.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import kr.owens.drivetube.R;
+
+public class MainActivity extends AppCompatActivity implements MainContract.View {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
