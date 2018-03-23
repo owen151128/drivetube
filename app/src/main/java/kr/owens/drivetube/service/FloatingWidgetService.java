@@ -1,6 +1,7 @@
 package kr.owens.drivetube.service;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.PixelFormat;
@@ -11,10 +12,14 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import kr.owens.drivetube.R;
 import kr.owens.drivetube.databinding.WidgetFloatingBinding;
 import kr.owens.drivetube.ui.MainActivity;
+import kr.owens.drivetube.wrapper.WebViewClientWrapper;
 
 public class FloatingWidgetService extends Service {
 
@@ -40,6 +45,7 @@ public class FloatingWidgetService extends Service {
         binding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.widget_floating, null, false);
         binding.setService(this);
         mView = binding.getRoot();
+        setWebView(binding.webView, binding.webView.getSettings());
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
@@ -93,7 +99,6 @@ public class FloatingWidgetService extends Service {
 
             return false;
         });
-
     }
 
     @Override
@@ -107,11 +112,23 @@ public class FloatingWidgetService extends Service {
         return mView == null || binding.widgetLayout.getVisibility() == View.VISIBLE;
     }
 
+    private void setWebView(WebView webView, WebSettings webSettings) {
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setJavaScriptEnabled(true);
+
+        webView.setFocusable(true);
+        webView.setWebViewClient(new WebViewClientWrapper());
+        webView.loadUrl("https://m.youtube.com");
+    }
+
     public void onStopServiceButtonClicked(View v) {
         stopSelf();
     }
 
     public void onCloseWebViewButtonClicked(View v) {
+
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInput(InputMethodManager.RESULT_UNCHANGED_SHOWN, InputMethodManager.RESULT_UNCHANGED_SHOWN);
         binding.widgetLayout.setVisibility(View.VISIBLE);
         binding.webViewLayout.setVisibility(View.GONE);
     }

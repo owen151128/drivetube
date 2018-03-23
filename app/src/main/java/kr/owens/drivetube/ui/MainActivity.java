@@ -10,10 +10,13 @@ import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import kr.owens.drivetube.R;
 import kr.owens.drivetube.databinding.ActivityMainBinding;
 import kr.owens.drivetube.service.FloatingWidgetService;
+import kr.owens.drivetube.wrapper.WebViewClientWrapper;
 
 public class MainActivity extends AppCompatActivity implements MainContract.View {
 
@@ -25,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        setWebView(binding.mainWeb, binding.mainWeb.getSettings());
         alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
@@ -53,6 +57,17 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private void initView() {
         startService(new Intent(MainActivity.this, FloatingWidgetService.class));
         finish();
+    }
+
+    private void setWebView(WebView webView, WebSettings webSettings) {
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setBuiltInZoomControls(true);
+        webSettings.setSupportZoom(true);
+        webSettings.setJavaScriptEnabled(true);
+
+        webView.setFocusable(true);
+        webView.setWebViewClient(new WebViewClientWrapper());
+        webView.loadUrl("http://www.youtube.com");
     }
 
     private void makeDialog(String title, String message,
